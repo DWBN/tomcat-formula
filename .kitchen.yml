@@ -1,0 +1,80 @@
+---
+driver:
+  name: docker
+  hostname: salt-formula.ci.local
+  use_sudo: true
+  require_chef_omnibus: false  
+
+# verifier:
+  # name: inspec
+
+platforms:
+  - name: ubuntu-14.04
+  - name: ubuntu-16.04
+  - name: debian-7
+  - name: debian-8
+  - name: centos-6
+  - name: centos-7
+
+provisioner:
+  name: salt_solo
+  salt_install: bootstrap
+  salt_bootstrap_url: https://bootstrap.saltstack.com
+  salt_version: latest
+  salt_pillar_root: pillar.example
+  log_level: <%= ENV['SALT_DEBUG_LEVEL'] || 'info' %>
+  formula: tomcat
+  state_top:
+    base:
+      '*':
+        - tomcat
+suites:
+  - name: tomcat_install
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat
+            - tomcat.manager
+
+  - name: tomcat_config
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat.config
+            - tomcat.manager
+            - tomcat.vhosts
+            - tomcat.expires
+            - tomcat.context
+            - tomcat.cluster
+  - name: tomcat_native
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat.native
+  - name: tomcat_manager
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat.manager
+  - name: tomcat_expires
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat.expires
+  - name: tomcat_context
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat.context
+  - name: tomcat_cluster
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - tomcat.cluster

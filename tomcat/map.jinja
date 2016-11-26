@@ -1,44 +1,25 @@
-{% set version = salt['pillar.get']('tomcat:version','7') %}
-{% set service = "tomcat" ~ version %}
-{% set tomcat = salt['grains.filter_by']({
-    'Debian': {
-        'name': 'tomcat',
-        'version': version,
-        'service': service,
-        'native': 'libtcnative-1',
-        'manager': service ~ '-admin',
-    },
-    'Ubuntu': {
-        'name': 'tomcat',
-        'version': version,
-        'service': service,
-        'native': 'libtcnative-1',
-        'manager': service ~ '-admin',
-    },
-    'RedHat': {
-        'name': 'tomcat',
-        'version': version,
-        'service': service,
-        'native': 'tomcat-native',
-        'manager': 'tomcat-admin-webapps',
-    },
-    'openSUSE': {
-        'name': 'tomcat',
-        'version': version,
-        'service': service,
-        'native': 'libtcnative-1-0',
-        'manager': 'tomcat-admin-webapps',
-    },
-    'FreeBSD': {
-        'name': 'tomcat',
-        'version': version,
-        'service': 'tomcat',
-        'native': 'tomcat-native',
-    },
-    'Arch': {
-        'name': 'tomcat',
-        'version': version,
-        'service': 'tomcat',
-        'native': 'tomcat-native'
-    },
-}, merge=salt['pillar.get']('tomcat:lookup')) %}
+# -*- coding: utf-8 -*-
+# vim: ft=jinja
+
+{% import_yaml "tomcat/defaults.yaml" as defaults %}
+{% import_yaml "tomcat/osmap.yaml" as osmap %}
+{% import_yaml "tomcat/codenamemap.yaml" as codemap %}
+
+{# get the settings for the os_family grain #}
+{% set osfam = salt['grains.filter_by'](osmap) or {} %}
+{# get the settings for the oscodename grain, os_family data will override
+    oscodename data #}
+{% set oscode = salt['grains.filter_by'](codemap,
+                                         grain='oscodename',
+                                         merge=osfam) or {} %}
+
+{# merge the os family/codename specific data over the defaults #}
+{% do defaults.tomcat.update(oscode) %}
+
+{# merge the pillar:lookup dict into the defaults/os specific dict #}
+{% set lookup = salt['pillar.get']('tomcat:lookup',
+                                   default=defaults.tomcat,
+                                   merge=True) %}
+
+{# merge the actual tomcat pillar into the above combined dict #}
+{% set tomcat = salt['pillar.get']('tomcat', default=lookup, merge=True) %}

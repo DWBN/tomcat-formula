@@ -3,11 +3,11 @@
 include:
   - tomcat.config
 
-300_server_xml:
+600_server_xml:
   file.accumulated:
     - filename: {{ tomcat.conf_dir }}/server.xml
-    {% if tomcat.sites is defined %}
-    - text: {{ tomcat.sites }}
+    {% if tomcat.cluster is defined %}
+    - text: {{ tomcat.cluster }}
     {% endif %}
     - require_in:
       - file: server_xml

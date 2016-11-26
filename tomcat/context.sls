@@ -3,19 +3,9 @@
 include:
   - tomcat
 
-{% if grains.os != 'FreeBSD' %}
-
-# on archlinux tomcat manager is already in tomcat package
-{% if grains.os != 'Arch' %}
-{{ tomcat.manager_pkg }}:
-  pkg.installed:
-    - require:
-      - pkg: tomcat
-{% endif %}
-
-{{ tomcat.conf_dir }}/tomcat-users.xml:
+{{ tomcat.conf_dir }}/context.xml:
   file.managed:
-    - source: salt://tomcat/files/tomcat-users.xml
+    - source: salt://tomcat/files/context.xml
     - user: root
     - group: {{ tomcat.group }}
     - mode: '640'
@@ -28,5 +18,4 @@ include:
       - service: tomcat
     - watch_in:
       - service: tomcat
-{% endif %}
 
