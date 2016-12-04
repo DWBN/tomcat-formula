@@ -18,34 +18,45 @@ Available states
 ``tomcat``
 ----------
 
-Includes tomcat.package for the Tomcat install.
+Installs Tomcat and starts the service. The main configuration files are
+not changed, and the distro's defaults are preserved as they come in the
+package.
+
+``tomcat.config``
+------------------
+
+Configures the configuration file. Sane defaults are provided for the major
+Linux distros (Debian, RedHat, Arch) and their derivatives.
 
 ``tomcat.native``
 -----------------
 
-Installs Apache Portable Runtime for Tomcat.
+Installs Apache Portable Runtime for Tomcat. Depends on ``tomcat.config``
+to manage the configuration.
 
 ``tomcat.manager``
 -----------------
 
 Installs the host-manager and manager web applications for Apache Tomcat.
 
-``tomcat.package``
-------------------
-
-Installs the Tomcat package, and configures the configuration file.
-
 ``tomcat.vhosts``
 ------------------
 
 Configures Tomcat name-based virtual hosts using data from Pillar.
 
-``tomcat.ssl``
+``tomcat.expires``
 ------------------
 
-Enables SSL in tomcat.
+Configures Tomcat simple TCP cluster using data from Pillar.
 
-Formula Dependencies
-====================
+``tomcat.cluster``
+------------------
 
-* java
+Enables Tomcats' ExpiresFilter using data from Pillar.
+
+``tomcat.context``
+------------------
+
+Configures context element in the ``$CATALINA_BASE/conf/context.xml`` file:
+the information in this file will be loaded by all web applications.
+(Check the ``context`` examples in the ``pillar.example`` file for more information.
